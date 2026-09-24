@@ -1,97 +1,97 @@
-# Keychron QMK Firmware
+# Keymap perso — Keychron K4 HE ISO
 
-[![Star this repo](https://img.shields.io/github/stars/Keychron/qmk_firmware?style=social&label=Star%20this%20repo)](https://github.com/Keychron/qmk_firmware)
+Fork de [Keychron/qmk_firmware](https://github.com/Keychron/qmk_firmware),
+dont le [readme d'origine](https://github.com/Keychron/qmk_firmware/blob/2025q3/readme.md)
+décrit le projet amont.
 
-![Keychron Keyboards](https://raw.githubusercontent.com/Keychron/Keychron-Keyboards-Hardware-Design/main/docs/assets/hero-keychron-hardware-design.jpg)
+Tout tient dans `keyboards/keychron/k4_he/iso/keymaps/perso/keymap.c`.
+Aucun fichier Keychron n'est modifié, hors ce readme.
 
-Official QMK firmware for Keychron and Lemokey keyboards. This repository contains the firmware source, build configurations, and keymaps for 63+ boards across the Q, Q HE, Q Max, K HE, K Max, K Pro, V, V Max, C Pro, S, X, and Lemokey series.
+- La touche en haut à droite fait défiler les profils HE : 1 → 2 → 3 → 1.
+  Elle s'affiche `CUSTOM(64)` dans le Launcher — c'est le keycode `PROF_CYC`.
+- À chaque changement de profil (la touche, Fn+P+Z/X/C, ou le Launcher) et au
+  démarrage : couleur unie du profil, luminosité conservée. Éteint reste éteint.
+- Le clavier démarre toujours sur le profil 1 (typing).
 
-## Why Open Source?
+| Profil | Clavier | Verr. Maj / Num |
+|---|---|---|
+| 1 · typing | bleu clair | rouge |
+| 2 · gaming | rouge | bleu clair |
+| 3 · manette | violet | vert |
 
-Keychron is the first major keyboard brand to fully open-source both its [firmware](https://github.com/Keychron/qmk_firmware) and [hardware design](https://github.com/Keychron/Keychron-Keyboards-Hardware-Design). We believe you should be able to see, verify, and modify every line of code that runs on your keyboard. Open source means full transparency — no black boxes between you and your hardware.
+## Prérequis — une fois par machine
 
-We also want to build something bigger than what any single company can do alone. By opening our firmware to the community, developers and enthusiasts can push what keyboards are capable of — custom keymaps, new features, creative workflows — and those contributions make every Keychron keyboard better for everyone.
+Installer **[QMK MSYS](https://msys.qmk.fm/)** : un terminal livré avec le
+compilateur ARM, Python et le CLI `qmk`. Toutes les commandes de ce README s'y
+lancent.
 
-## Features
-
-- **Hall Effect magnetic switch support** — adjustable actuation and rapid trigger on HE boards
-- **Wireless connectivity** — Bluetooth 5.1 and 2.4 GHz firmware for wireless models
-- **[Keychron Launcher](https://launcher.keychron.com/)** — remap keys, tune HE settings, and configure lighting from your browser with no setup
-- **RGB Matrix lighting** — per-key RGB effects and customization
-- **Multiple layout variants** — ANSI, ISO, and JIS for every supported board
-- **Full QMK feature set** — layers, tap-dance, combos, macros, encoders, OLED, and more
-
-## Getting Started
-
-### Option A: Use Keychron Launcher (no code required)
-
-If you just want to remap keys, tune Hall Effect settings, or change lighting, you don't need to build firmware:
-
-1. Open [Keychron Launcher](https://launcher.keychron.com/) in a Chromium-based browser such as Google Chrome, Microsoft Edge, Brave, Opera, or Vivaldi
-2. Connect your Keychron keyboard via USB
-3. Remap keys, configure layers, adjust lighting, and fine-tune HE sensitivity — changes apply instantly
-
-Keychron Launcher works out of the box with no JSON import required, and supports features beyond VIA such as Hall Effect actuation point tuning and rapid trigger configuration. Safari and other non-Chromium browsers will not work with Keychron Launcher.
-
-### Option B: Build from source
-
-Set up your build environment and compile custom firmware:
+Puis, dans ce terminal :
 
 ```bash
-python3 -m pip install qmk
-qmk setup Keychron/qmk_firmware
-qmk compile -kb keychron/q1_he/ansi_encoder -km keychron
-qmk flash -kb keychron/q1_he/ansi_encoder -km keychron
+git clone -b k4he-perso https://github.com/Ioamra/qmk_firmware.git
+cd qmk_firmware
+git submodule update --init --depth 1 lib/chibios lib/chibios-contrib lib/printf lib/lufa
+qmk config user.qmk_home="$(pwd -W)"
 ```
 
-More build examples:
+La dernière ligne enregistre le chemin du dépôt dans
+`%LOCALAPPDATA%\QMK.EXE\qmk.exe\qmk.exe.ini`. C'est pour ça que les commandes de
+compilation et de flash n'indiquent aucun chemin — et c'est aussi pourquoi elles
+fonctionnent depuis n'importe quel répertoire courant.
+
+## Changer une couleur
+
+Dans `keyboards/keychron/k4_he/iso/keymaps/perso/keymap.c`, ligne 96 :
+
+```c
+static const profile_colors_t profile_colors[PROFILE_COUNT] = {
+    //                    clavier            Verr. Maj / Verr. Num
+    /* 1 - typing  */ { { 140, 255 },        {   0, 255 } },
+    /* 2 - gaming  */ { {   0, 255 },        { 140, 255 } },
+    /* 3 - manette */ { { 191, 255 },        {  85, 255 } },
+};
+```
+
+Chaque paire est `{ teinte, saturation }`, en **HSV**, composantes sur 0-255.
+Une table de teintes de référence est en commentaire au-dessus, dans le fichier.
+
+Deux autres réglages dans le même fichier :
+
+- ligne 108 — `LOCK_BRIGHTNESS 255` : luminosité des touches de verrouillage.
+- ligne 111 — `PROFILE_ON_BOOT PROFILE_TYPING` : profil au démarrage
+  (`PROFILE_TYPING`, `PROFILE_GAMING` ou `PROFILE_GAMEPAD`).
+
+La luminosité générale du clavier n'est volontairement pas réglable ici : le
+firmware conserve celle réglée au clavier.
+
+## Flasher
+
+**1. Mettre en bootloader.** Débrancher l'USB → interrupteur sur `Cable` →
+maintenir **Esc** → rebrancher → attendre 3 s → relâcher.
+Le clavier devient inerte, rétroéclairage éteint : c'est le bon signe.
+
+**2. Dans le terminal QMK MSYS** (la commande recompile puis flashe) :
 
 ```bash
-make keychron/q1_he/ansi_encoder:keychron
-make keychron/k8_pro/ansi/rgb:keychron
-make keychron/v1_max/ansi_encoder:keychron:flash
+qmk flash -kb keychron/k4_he/iso -km perso
 ```
 
-See the [QMK build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) and [make guide](https://docs.qmk.fm/#/getting_started_make_guide) for details. New to QMK? Start with the [Complete Newbs Guide](https://docs.qmk.fm/#/newbs).
+`-kb keychron/k4_he/iso` désigne le clavier, `-km perso` le dossier
+`keymaps/perso`. Le clavier physique n'a pas à être désigné : `dfu-util` prend
+le seul périphérique en bootloader — donc un seul clavier à la fois.
 
-## Supported Keyboards
+Succès = `File downloaded successfully`. Le clavier redémarre seul.
+Le message `Device's firmware is corrupt` au début est normal.
 
-All board definitions live under [`keyboards/keychron/`](keyboards/keychron/) and [`keyboards/lemokey/`](keyboards/lemokey/).
+Si la commande répond `No DFU capable USB device available` alors que le clavier
+est bien inerte, c'est qu'il manque le pilote WinUSB : l'installeur de
+[QMK Toolbox](https://github.com/qmk/qmk_toolbox/releases) le pose.
 
-| Series | Boards | Type |
-|--------|--------|------|
-| **Q HE** | Q1 HE, Q2 HE, Q3 HE, Q4 HE, Q5 HE, Q6 HE, Q12 HE | Hall Effect, wireless |
-| **Q / Q Max** | Q0, Q1 v1/v2, Q1 Max, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q9 Plus, Q10, Q11, Q12, Q60, Q65 | Mechanical, various |
-| **K HE** | K2 HE, K4 HE, K6 HE, K8 HE, K10 HE | Hall Effect, wireless |
-| **K Max / K Pro** | K4 Max, K8 Max, K8 Pro, K9 Max | Mechanical, wireless |
-| **V / V Max** | V1, V1 8K, V1 Max, V2, V3, V4, V5, V5 Max, V6, V6 v2, V6 Max, V7, V8, V10 | Mechanical, wired/wireless |
-| **C Pro** | C1 Pro, C1 Pro v2, C1 Pro 8K, C2 Pro, C2 Pro v2, C2 Pro 8K, C3 Pro, C3 Pro 8K | Mechanical, wired |
-| **S / X** | S1, X0 | Mechanical |
-| **Lemokey** | L1 HE, P1 HE, P2 HE | Hall Effect gaming |
+Pour compiler sans flasher : `qmk compile -kb keychron/k4_he/iso -km perso`.
 
-Each board folder contains its own `readme.md` with exact build targets, product links, and reset instructions.
+## Ne pas mettre à jour le firmware depuis le Launcher
 
-## Hardware Design
-
-For PCB files, schematics, and hardware design resources, see the companion repository:
-
-[Keychron-Keyboards-Hardware-Design](https://github.com/Keychron/Keychron-Keyboards-Hardware-Design)
-
-## Community and Support
-
-- **Join the community**  
-  Join the [Keychron Discord](https://discord.com/invite/HAYbRrTsjN) to share builds, ask questions, and help grow the hardware modding community.
-- [Keychron Website](https://www.keychron.com)
-- [Keychron on Reddit](https://www.reddit.com/r/Keychron/)
-- [QMK Discord](https://discord.gg/qmk)
-- [QMK Documentation](https://docs.qmk.fm)
-
-## Contributing
-
-Contributions are welcome — whether it's a new keymap, a bug fix, or documentation improvement. See [`docs/contributing.md`](docs/contributing.md) for guidelines on submitting pull requests.
-
-## License
-
-This project is licensed under the [GNU General Public License v2.0](LICENSE).
-
-This repository tracks the [upstream QMK firmware](https://github.com/qmk/qmk_firmware) with Keychron-specific board definitions and firmware additions.
+Ça écraserait ce firmware par celui de Keychron. Le bandeau « mise à jour
+disponible » est informatif : le Launcher compare un numéro de version et ne
+sait pas que ce firmware est un build maison. Si c'est fait quand même, il
+suffit de reflasher.
