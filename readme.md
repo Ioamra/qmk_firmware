@@ -13,11 +13,11 @@ Aucun fichier Keychron n'est modifié, hors ce readme.
   démarrage : couleur unie du profil, luminosité conservée. Éteint reste éteint.
 - Le clavier démarre toujours sur le profil 1 (typing).
 
-| Profil | Clavier | Verr. Maj / Num |
-|---|---|---|
-| 1 · typing | bleu clair | rouge |
-| 2 · gaming | rouge | bleu clair |
-| 3 · manette | violet | vert |
+| Profil      | Clavier        | Verr. Maj / Num |
+| ----------- | -------------- | --------------- |
+| 1 · typing  | bleu           | rouge           |
+| 2 · gaming  | bleu clair     | rouge           |
+| 3 · manette | bleu turquoise | rouge           |
 
 ## Prérequis — une fois par machine
 
@@ -45,10 +45,10 @@ Dans `keyboards/keychron/k4_he/iso/keymaps/perso/keymap.c`, ligne 96 :
 
 ```c
 static const profile_colors_t profile_colors[PROFILE_COUNT] = {
-    //                    clavier            Verr. Maj / Verr. Num
-    /* 1 - typing  */ { { 140, 255 },        {   0, 255 } },
-    /* 2 - gaming  */ { {   0, 255 },        { 140, 255 } },
-    /* 3 - manette */ { { 191, 255 },        {  85, 255 } },
+    //                    clavier       Verr. Maj / Verr. Num
+    /* 1 - typing  */ { { 160, 255 },   { 0, 255 } },
+    /* 2 - gaming  */ { { 140, 255 },   { 0, 255 } },
+    /* 3 - manette */ { { 110, 255 },   { 0, 255 } },
 };
 ```
 

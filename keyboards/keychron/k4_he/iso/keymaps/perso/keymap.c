@@ -94,10 +94,10 @@ typedef struct {
  */
 // clang-format off
 static const profile_colors_t profile_colors[PROFILE_COUNT] = {
-    //                    clavier            Verr. Maj / Verr. Num
-    /* 1 - typing  */ { { 140, 255 },        {   0, 255 } },  // bleu clair / rouge
-    /* 2 - gaming  */ { {   0, 255 },        { 140, 255 } },  // rouge      / bleu clair
-    /* 3 - manette */ { { 191, 255 },        {  85, 255 } },  // violet     / vert
+    //                    clavier       Verr. Maj / Verr. Num
+    /* 1 - typing  */ { { 160, 255 },   { 0, 255 } }, // bleu           / rouge
+    /* 2 - gaming  */ { { 140, 255 },   { 0, 255 } }, // bleu clair     / rouge
+    /* 3 - manette */ { { 110, 255 },   { 0, 255 } }, // bleu turquoise / rouge
 };
 // clang-format on
 
